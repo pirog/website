@@ -1,0 +1,21 @@
+name: lando
+recipe: laravel
+config:
+  webroot: public
+events:
+  post-start:
+    - php /app/artisan migrate
+excludes:
+  - vendor
+  - node_modules
+services:
+  node:
+    type: node
+    build:
+      - yarn
+  appserver:
+    build:
+      - composer install
+tooling:
+  yarn:
+    service: node
