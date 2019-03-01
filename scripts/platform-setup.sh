@@ -1,13 +1,25 @@
 #!/bin/bash
 set -e
 
+# TODO: how do we handle a borked setup? eg delete the project before exiting?
+# TODO: get a separate script for a lando pull command to get databases and mounts
+# Use the platform.sh CLI to export your database
+#cd /path/to/repo/root
+#lando platform db:dump --gzip --file=dump.sql.gz --project=PROJECT_ID --environment=master
+
+# Import the DB with Lando
+#lando db-import dump.sql.gz
+
+# Remove the DB dump to be safe
+#rm -f dump.sql.gz
+
 # HELPFUL ENVARS
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 LOCKFILE="$DIR/../setup.lock"
 PATH="$PATH:/var/www/.platformsh/bin"
 
 # DEFAULTS
-DEFAULT_USERS=("mike@thinktandem" "john@thinktandem")
+DEFAULT_USERS=("mike@thinktandem.io" "john@thinktandem.io")
 PLATFORM_TOKEN_VALIDATOR="none"
 PLATFORM_USER="none"
 YES=
@@ -195,12 +207,12 @@ if platform projects --title="$PLATFORM_NAME" --pipe | wc -l | grep 0 >/dev/null
   # Add default user
   for DEFAULT_USER in "${DEFAULT_USERS[@]}"; do
     echo "Adding $DEFAULT_USER"
-    platform user:add $DEFAULT_USER --role=admin --project=$PLATFORM_PROJECT
+    platform user:add $DEFAULT_USER --role=admin --project=$PLATFORM_PROJECT $YES
   done
   # Add a bonus user if specified
   if [ "$PLATFORM_USER" != "none" ]; then
     echo "Also adding $PLATFORM_USER..."
-    platform user:add $PLATFORM_USER --role=admin --project=$PLATFORM_PROJECT
+    platform user:add $PLATFORM_USER --role=admin --project=$PLATFORM_PROJECT $YES
   fi
   status_good "Added some users to $PLATFORM_NAME"
 
@@ -227,14 +239,3 @@ fi
 # Lock the setup
 touch $LOCKFILE
 status_good "$PLATFORM_NAME is now ready with all the DevOps!"
-
-# TODO: get a separate script for a lando pull command to get databases and mounts
-# Use the platform.sh CLI to export your database
-#cd /path/to/repo/root
-#lando platform db:dump --gzip --file=dump.sql.gz --project=PROJECT_ID --environment=master
-
-# Import the DB with Lando
-#lando db-import dump.sql.gz
-
-# Remove the DB dump to be safe
-#rm -f dump.sql.gz
