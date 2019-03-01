@@ -86,19 +86,19 @@ while (( "$#" )); do
       ;;
     --reynolds-validator|--reynolds-validator=*)
       if [ "${1##--reynolds-validator=}" != "$1" ]; then
-        export PLATFORM_TOKEN_VALIDATOR="${1##--reynolds-validator=}"
+        PLATFORM_TOKEN_VALIDATOR="${1##--reynolds-validator=}"
         shift
       else
-        export PLATFORM_TOKEN_VALIDATOR=$2
+        PLATFORM_TOKEN_VALIDATOR=$2
         shift 2
       fi
       ;;
     --user|--user=*)
       if [ "${1##--user=}" != "$1" ]; then
-        export PLATFORM_USER="${1##--user=}"
+        PLATFORM_USER="${1##--user=}"
         shift
       else
-        export PLATFORM_USER=$2
+        PLATFORM_USER=$2
         shift 2
       fi
       ;;
@@ -153,6 +153,7 @@ validate_gh_token() {
   fi
 }
 
+# This is where the main logic starts
 if [ -f "$LOCKFILE" ]; then
   status_warn "Looks like setup has already been run"
   status_warn "If you REALLY want to run setup then try it again with --force"
